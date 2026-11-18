@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOLDEN LEOPARD | 本週五溫馨中和之夜 派對邀請函</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Google Fonts: Noto Sans TC, Noto Serif TC, Fredoka (圓潤派對字體) 與 Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- 引入 FontAwesome 圖示庫 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 引入 Canvas Confetti 慶祝紙花特效 -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'Inter', 'sans-serif'],
+                        display: ['"Fredoka"', '"Noto Sans TC"', 'sans-serif'],
+                    },
+                    colors: {
+                        disco: {
+                            pink: '#FF1E8A',
+                            magenta: '#D9006C',
+                            gold: '#FFD000',
+                            amber: '#FF9900',
+                            purple: '#160626',
+                            card: '#210938',
+                            cyan: '#00F0FF',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* 派對霓虹宇宙紫背景 */
+        body {
+            background-color: #120420;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(255, 30, 138, 0.28) 0%, transparent 55%),
+                radial-gradient(circle at 15% 80%, rgba(0, 240, 255, 0.14) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(255, 208, 0, 0.16) 0%, transparent 45%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 海報風黃粉格紋外框條紋 */
+        .poster-checkered-bar {
+            background-image: repeating-linear-gradient(
+                90deg,
+                #FFD000 0px,
+                #FFD000 14px,
+                #FF1E8A 14px,
+                #FF1E8A 28px
+            );
+        }
+
+        /* 卡片霓虹發光邊框 */
+        .neon-card-glow {
+            box-shadow: 
+                0 25px 60px -15px rgba(0, 0, 0, 0.9),
+                0 0 30px rgba(255, 30, 138, 0.35),
+                inset 0 0 20px rgba(255, 208, 0, 0.08);
+            border: 2px solid rgba(255, 208, 0, 0.65);
+        }
+
+        /* 海報同款立體標題文字特效 */
+        .poster-title-gold {
+            background: linear-gradient(180deg, #FFF7B2 0%, #FFD000 45%, #FF8C00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 3px 0 #7A1C00) drop-shadow(0 0 12px rgba(255, 208, 0, 0.5));
+        }
+
+        .poster-title-pink {
+            color: #FF2E93;
+            text-shadow: 
+                -2px -2px 0 #FFF,  
+                 2px -2px 0 #FFF,
+                -2px  2px 0 #FFF,
+                 2px  2px 0 #FFF,
+                 0px  4px 0 #52002B,
+                 0px  0px 18px rgba(255, 30, 138, 0.9);
+        }
+
+        /* 豹紋質感徽章底紋 */
+        .leopard-badge {
+            background-color: #C67D28;
+            background-image: 
+                radial-gradient(ellipse at 25% 30%, #3A1904 18%, transparent 22%),
+                radial-gradient(ellipse at 70% 25%, #3A1904 15%, transparent 20%),
+                radial-gradient(ellipse at 45% 75%, #3A1904 20%, transparent 24%),
+                radial-gradient(ellipse at 80% 70%, #3A1904 14%, transparent 18%);
+            background-size: 26px 22px;
+        }
+
+        /* 階段切換過場動畫 */
+        .stage-enter {
+            animation: popSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes popSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.97);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* 動態展開區塊過渡 (預計抵達時間) */
+        .expand-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, margin 0.4s ease;
+            opacity: 0;
+            margin-top: 0;
+        }
+
+        .expand-wrapper.open {
+            grid-template-rows: 1fr;
+            opacity: 1;
+            margin-top: 1.25rem;
+        }
+
+        .expand-inner {
+            overflow: hidden;
+        }
+
+        /* 自訂時間選擇器深色圖示反轉 */
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.9) sepia(1) saturate(5) hue-rotate(300deg);
+            cursor: pointer;
+        }
+
+        /* 派對彩帶與閃光漂浮 */
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); opacity: 0.85; }
+            50% { transform: scale(1.06); opacity: 1; }
+        }
+        .disco-pulse {
+            animation: pulseGlow 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="text-white antialiased selection:bg-disco-pink selection:text-white flex flex-col justify-between">
+
+    <!-- 頂部海報風黃粉格紋飾條 -->
+    <div class="w-full h-2 poster-checkered-bar shadow-md"></div>
+
+    <!-- 頂部導覽與雙語切換列 -->
+    <header class="w-full max-w-xl mx-auto px-4 pt-4 pb-1 flex justify-between items-center z-20">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full leopard-badge border border-disco-gold shadow-md">
+            <i class="fa-solid fa-crown text-disco-gold text-xs drop-shadow"></i>
+            <span class="font-display text-xs font-bold tracking-wider text-amber-100 drop-shadow">GOLDEN LEOPARD</span>
+        </div>
+
+        <!-- 雙語切換按鈕 -->
+        <div class="inline-flex rounded-full bg-disco-card/90 p-1 border border-disco-pink/50 backdrop-blur-md shadow-lg">
+            <button id="btn-lang-zh" onclick="setLanguage('zh')" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 bg-gradient-to-r from-disco-pink to-disco-magenta text-white shadow-sm cursor-pointer">
+                繁體中文
+            </button>
+            <button id="btn-lang-en" onclick="setLanguage('en')" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 text-pink-200/70 hover:text-white cursor-pointer">
+                English
+            </button>
+        </div>
+    </header>
+
+    <!-- 主要互動卡片容器 -->
+    <main class="w-full max-w-lg mx-auto px-4 py-4 flex-grow flex items-center justify-center z-10">
+        
+        <!-- ========================================== -->
+        <!-- 第一階段：派對邀請函封面 (Stage 1)          -->
+        <!-- ========================================== -->
+        <section id="stage-invite" class="w-full bg-disco-card/95 backdrop-blur-xl rounded-3xl overflow-hidden neon-card-glow relative stage-enter">
+            
+            <!-- 主視覺插畫頂部 Banner (重現海報迪斯可舞台 + 披薩與餅乾吉祥物) -->
+            <div class="relative w-full bg-gradient-to-b from-[#2A0845] via-[#1B0530] to-disco-card pt-5 pb-2 px-4 overflow-hidden border-b border-disco-pink/30">
+                <!-- 背景聚光燈射線 SVG -->
+                <svg class="w-full h-44 sm:h-48 mx-auto overflow-visible" viewBox="0 0 400 185" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="discoBallGrad" cx="35%" cy="35%" r="65%">
+                            <stop offset="0%" stop-color="#FFFFFF"/>
+                            <stop offset="40%" stop-color="#F0ABFC"/>
+                            <stop offset="80%" stop-color="#A855F7"/>
+                            <stop offset="100%" stop-color="#3B0764"/>
+                        </radialGradient>
+                        <linearGradient id="beamCyan" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.45"/>
+                            <stop offset="100%" stop-color="#00F0FF" stop-opacity="0"/>
+                        </linearGradient>
+                        <linearGradient id="beamPink" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#FF1E8A" stop-opacity="0.5"/>
+                            <stop offset="100%" stop-color="#FF1E8A" stop-opacity="0"/>
+                        </linearGradient>
+                        <linearGradient id="beamGold" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#FFD000" stop-opacity="0.45"/>
+                            <stop offset="100%" stop-color="#FFD000" stop-opacity="0"/>
+                        </linearGradient>
+                    </defs>
+
+                    <!-- 舞台聚光燈光束 -->
+                    <polygon points="80,10 10,185 130,185" fill="url(#beamCyan)"/>
+                    <polygon points="200,25 110,185 290,185" fill="url(#beamPink)"/>
+                    <polygon points="320,10 270,185 390,185" fill="url(#beamGold)"/>
+
+                    <!-- 中央大型迪斯可球 -->
+                    <line x1="200" y1="0" x2="200" y2="18" stroke="#FFD000" stroke-width="2"/>
+                    <circle cx="200" cy="36" r="22" fill="url(#discoBallGrad)" stroke="#FFD000" stroke-width="1.5"/>
+                    <!-- 迪斯可球網格反光 -->
+                    <path d="M180 36 H220 M184 26 H216 M184 46 H216 M200 14 V58 M189 17 V55 M211 17 V55" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="0.9"/>
+                    <!-- 兩側小迪斯可球 -->
+                    <circle cx="135" cy="24" r="11" fill="url(#discoBallGrad)" stroke="#FF1E8A" stroke-width="1"/>
+                    <circle cx="265" cy="24" r="11" fill="url(#discoBallGrad)" stroke="#00F0FF" stroke-width="1"/>
+
+                    <!-- 彩帶與閃亮星星裝飾 -->
+                    <rect x="55" y="45" width="8" height="4" rx="1" transform="rotate(25 55 45)" fill="#FFD000"/>
+                    <rect x="340" y="55" width="8" height="4" rx="1" transform="rotate(-30 340 55)" fill="#FF1E8A"/>
+                    <rect x="95" y="85" width="7" height="4" rx="1" transform="rotate(-15 95 85)" fill="#00F0FF"/>
+                    <rect x="305" y="90" width="7" height="4" rx="1" transform="rotate(40 305 90)" fill="#FFD000"/>
+                    <path d="M45 25 L47 31 L53 33 L47 35 L45 41 L43 35 L37 33 L43 31 Z" fill="#FFF7B2"/>
+                    <path d="M355 22 L357 27 L362 29 L357 31 L355 36 L353 31 L348 29 L353 27 Z" fill="#FFF7B2"/>
+
+                    <!-- 左側吉祥物：穿格紋曲棍球衣的微笑披薩哥 -->
+                    <g transform="translate(105, 62)">
+                        <!-- 身體球衣 (桃紅格紋+藍黃條紋) -->
+                        <path d="M12 75 C12 62, 68 62, 68 75 L74 122 L6 122 Z" fill="#FF1E8A" stroke="#1E1B4B" stroke-width="2.5"/>
+                        <path d="M22 66 L58 66 L62 122 L18 122 Z" fill="#1D4ED8"/>
+                        <rect x="19" y="95" width="42" height="8" fill="#FFD000"/>
+                        <rect x="18" y="106" width="44" height="6" fill="#FF1E8A"/>
+                        <!-- 披薩三角形頭部 -->
+                        <path d="M8 14 Q40 2 72 14 L42 84 Z" fill="#FACC15" stroke="#B45309" stroke-width="2.5" stroke-linejoin="round"/>
+                        <!-- 披薩餅皮 -->
+                        <path d="M5 14 Q40 -1 75 14 Q76 22 69 23 Q40 11 11 23 Q4 22 5 14 Z" fill="#F59E0B" stroke="#92400E" stroke-width="2"/>
+                        <!-- 義式臘腸 Pepperoni -->
+                        <circle cx="24" cy="26" r="5" fill="#DC2626"/>
+                        <circle cx="56" cy="27" r="5" fill="#DC2626"/>
+                        <circle cx="40" cy="64" r="4.5" fill="#DC2626"/>
+                        <!-- 可愛大眼睛與開心笑容 -->
+                        <ellipse cx="32" cy="38" rx="4.5" ry="6" fill="#1E1B4B"/>
+                        <circle cx="33.5" cy="36" r="1.8" fill="#FFFFFF"/>
+                        <ellipse cx="48" cy="38" rx="4.5" ry="6" fill="#1E1B4B"/>
+                        <circle cx="49.5" cy="36" r="1.8" fill="#FFFFFF"/>
+                        <path d="M31 48 Q40 59 49 48 Z" fill="#7F1D1D"/>
+                        <path d="M35 53 Q40 57 45 53 Q40 51 35 53 Z" fill="#FB7185"/>
+                    </g>
+
+                    <!-- 右側吉祥物：穿藍黃菱格曲棍球衣的微笑巧克力餅乾哥 -->
+                    <g transform="translate(215, 65)">
+                        <!-- 身體球衣 (藍黃格紋) -->
+                        <path d="M12 72 C12 59, 68 59, 68 72 L74 119 L6 119 Z" fill="#1D4ED8" stroke="#1E1B4B" stroke-width="2.5"/>
+                        <polygon points="40,66 54,82 40,98 26,82" fill="#FFD000"/>
+                        <line x1="32" y1="74" x2="48" y2="90" stroke="#FF1E8A" stroke-width="3" stroke-linecap="round"/>
+                        <line x1="48" y1="74" x2="32" y2="90" stroke="#FF1E8A" stroke-width="3" stroke-linecap="round"/>
+                        <!-- 圓形餅乾頭部 -->
+                        <circle cx="40" cy="38" r="33" fill="#D97706" stroke="#78350F" stroke-width="2.5"/>
+                        <circle cx="40" cy="38" r="29" fill="#EAB308" fill-opacity="0.35"/>
+                        <!-- 巧克力豆 -->
+                        <circle cx="22" cy="22" r="4" fill="#451A03"/>
+                        <circle cx="56" cy="20" r="4.5" fill="#451A03"/>
+                        <circle cx="18" cy="44" r="3.8" fill="#451A03"/>
+                        <circle cx="61" cy="45" r="4" fill="#451A03"/>
+                        <circle cx="30" cy="60" r="3.5" fill="#451A03"/>
+                        <circle cx="52" cy="59" r="3.8" fill="#451A03"/>
+                        <!-- 可愛大眼睛與開心笑容 -->
+                        <ellipse cx="31" cy="36" rx="4.5" ry="6" fill="#1E1B4B"/>
+                        <circle cx="32.5" cy="34" r="1.8" fill="#FFFFFF"/>
+                        <ellipse cx="49" cy="36" rx="4.5" ry="6" fill="#1E1B4B"/>
+                        <circle cx="50.5" cy="34" r="1.8" fill="#FFFFFF"/>
+                        <path d="M30 47 Q40 59 50 47 Z" fill="#7F1D1D"/>
+                        <path d="M34 52 Q40 57 46 52 Q40 50 34 52 Z" fill="#FB7185"/>
+                    </g>
+
+                    <!-- 交叉曲棍球桿 -->
+                    <path d="M125 145 L255 180 L272 176" stroke="#F8FAFC" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M275 145 L145 180 L128 176" stroke="#FFD000" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <!-- 邀請函文字與細節區塊 -->
+            <div class="p-6 sm:p-8 text-center relative">
+                <!-- 主標題 -->
+                <p class="font-display text-lg sm:text-xl font-bold tracking-wider poster-title-gold mb-1" data-i18n="inviteLine1">
+                    誠摯邀請您參與
+                </p>
+                <h1 class="font-sans text-3xl sm:text-4xl font-black tracking-tight poster-title-pink leading-tight mb-6" data-i18n="inviteLine2">
+                    本週五溫馨中和之夜
+                </h1>
+
+                <!-- 海報同款時間亮點橫幅 (11/20 FRI 19:30) -->
+                <div class="bg-gradient-to-r from-[#2D0A4E] via-[#450B5E] to-[#2D0A4E] rounded-2xl p-4 border-2 border-disco-pink/60 shadow-lg mb-5 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5">
+                    <div class="flex items-baseline gap-2">
+                        <span class="font-display text-4xl sm:text-5xl font-black text-disco-pink drop-shadow-[0_2px_10px_rgba(255,30,138,0.8)]">11/20</span>
+                        <span class="font-display text-xl sm:text-2xl font-extrabold text-white bg-disco-pink px-2.5 py-0.5 rounded-lg shadow">FRI</span>
+                    </div>
+                    <div class="hidden sm:block w-0.5 h-10 bg-disco-gold/40"></div>
+                    <div class="text-center sm:text-left">
+                        <div class="text-xs text-disco-gold font-bold uppercase tracking-wider" data-i18n="timeLabel">派對時間 / TIME</div>
+                        <div class="text-lg sm:text-xl font-black text-white" data-i18n="timeValue">19:30 準時開演</div>
+                    </div>
+                </div>
+
+                <!-- 派對注意事項 / 幽默規則卡片 -->
+                <div class="bg-black/40 rounded-2xl p-4 sm:p-5 border border-disco-gold/30 text-left space-y-3 mb-7">
+                    <div class="flex items-center gap-2 text-disco-gold text-xs font-bold tracking-widest uppercase mb-1">
+                        <i class="fa-solid fa-star"></i>
+                        <span data-i18n="notesHeader">派對備註 & 溫馨提醒</span>
+                    </div>
+
+                    <!-- 規則 1：酒水與披薩 -->
+                    <div class="flex items-start gap-3">
+                        <span class="w-7 h-7 rounded-lg bg-disco-pink/20 border border-disco-pink/40 flex items-center justify-center text-sm shrink-0 mt-0.5">🍕</span>
+                        <p class="text-sm text-pink-50 font-medium leading-snug" data-i18n="rule1">
+                            自備酒水與零食，現場會有美味披薩！
+                        </p>
+                    </div>
+
+                    <!-- 規則 2：洗澡提醒 -->
+                    <div class="flex items-start gap-3">
+                        <span class="w-7 h-7 rounded-lg bg-disco-cyan/15 border border-disco-cyan/40 flex items-center justify-center text-sm shrink-0 mt-0.5">🚿</span>
+                        <p class="text-sm text-pink-50 font-medium leading-snug" data-i18n="rule2">
+                            可以洗澡，但一次建議一人就好
+                        </p>
+                    </div>
+
+                    <!-- 規則 3：Dress Code -->
+                    <div class="flex items-start gap-3">
+                        <span class="w-7 h-7 rounded-lg bg-disco-gold/20 border border-disco-gold/40 flex items-center justify-center text-sm shrink-0 mt-0.5">👕</span>
+                        <p class="text-sm text-disco-gold font-bold leading-snug" data-i18n="rule3">
+                            無 Dress Code，希望你有穿衣服
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 顯眼的點擊回覆按鈕 -->
+                <button onclick="switchStage('form')" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#7928CA] via-disco-pink to-[#FF4D4D] hover:brightness-110 text-white font-black text-lg tracking-wide shadow-[0_8px_25px_rgba(255,30,138,0.5)] border border-white/30 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-2.5 cursor-pointer disco-pulse">
+                    <span data-i18n="btnOpenRsvp">點擊回覆出席</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 第二階段：RSVP 出席回覆表單 (Stage 2)        -->
+        <!-- ========================================== -->
+        <section id="stage-form" class="hidden w-full bg-disco-card/95 backdrop-blur-xl rounded-3xl p-6 sm:p-8 neon-card-glow relative">
+            <!-- 返回邀請函按鈕 -->
+            <button type="button" onclick="switchStage('invite')" class="inline-flex items-center gap-1.5 text-xs font-bold text-disco-gold hover:text-white transition-colors mb-4 cursor-pointer py-1">
+                <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                <span data-i18n="btnBackInvite">返回邀請函海報</span>
+            </button>
+
+            <div class="mb-5">
+                <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-2">
+                    <span data-i18n="formTitle">出席回覆</span>
+                    <span class="text-xl">🪩</span>
+                </h2>
+                <p class="text-xs sm:text-sm text-pink-200/80 mt-1" data-i18n="formSubtitle">填寫以下資訊，讓我們知道你會來中和狂歡！</p>
+            </div>
+
+            <!-- 自訂錯誤訊息提示框 -->
+            <div id="form-error-banner" class="hidden mb-5 p-3.5 rounded-xl bg-red-500/20 border border-red-400 text-red-100 text-xs sm:text-sm font-medium flex items-center gap-2.5">
+                <i class="fa-solid fa-circle-exclamation text-disco-gold"></i>
+                <span id="form-error-text">請填寫必填欄位</span>
+            </div>
+
+            <form id="rsvp-form" onsubmit="handleFormSubmit(event)" novalidate class="space-y-5">
+                <!-- 1. 您的名字 (必填) -->
+                <div>
+                    <label for="guest-name" class="block text-sm font-bold text-white mb-2">
+                        <span data-i18n="fieldName">您的名字</span>
+                        <span class="text-disco-pink ml-1">*</span>
+                    </label>
+                    <input type="text" id="guest-name" required
+                        class="w-full px-4 py-3.5 rounded-xl bg-black/50 border-2 border-purple-500/40 text-white placeholder-purple-300/40 focus:outline-none focus:border-disco-pink focus:ring-2 focus:ring-disco-pink/30 transition-all text-sm sm:text-base font-medium"
+                        data-placeholder-zh="請輸入您的名字或綽號"
+                        data-placeholder-en="Please enter your name or nickname"
+                        placeholder="請輸入您的名字或綽號">
+                </div>
+
+                <!-- 2. 您會參與嗎？ (單選卡片式按鈕) -->
+                <div>
+                    <label class="block text-sm font-bold text-white mb-2.5">
+                        <span data-i18n="fieldAttend">您會參與嗎？</span>
+                        <span class="text-disco-pink ml-1">*</span>
+                    </label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- 選項 A：我會去！ -->
+                        <label class="cursor-pointer relative">
+                            <input type="radio" name="attendance" value="yes" class="peer sr-only" onchange="toggleArrivalTime(true)">
+                            <div class="p-3.5 rounded-2xl bg-black/40 border-2 border-purple-500/40 peer-checked:border-disco-gold peer-checked:bg-gradient-to-br peer-checked:from-disco-pink/30 peer-checked:to-purple-900/60 transition-all flex items-center gap-3 hover:border-disco-pink/60">
+                                <div class="w-5 h-5 rounded-full border-2 border-purple-300/60 peer-checked:border-disco-gold flex items-center justify-center shrink-0 transition-colors">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-disco-gold scale-0 transition-transform duration-200" id="radio-inner-yes"></div>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-black text-white" data-i18n="optYesTitle">我會去！🎉</div>
+                                    <div class="text-xs text-pink-200/80" data-i18n="optYesSub">準備好開喝吃披薩</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- 選項 B：很遺憾，這次無法參加 -->
+                        <label class="cursor-pointer relative">
+                            <input type="radio" name="attendance" value="no" class="peer sr-only" onchange="toggleArrivalTime(false)">
+                            <div class="p-3.5 rounded-2xl bg-black/40 border-2 border-purple-500/40 peer-checked:border-purple-300 peer-checked:bg-purple-950/80 transition-all flex items-center gap-3 hover:border-purple-400/60">
+                                <div class="w-5 h-5 rounded-full border-2 border-purple-300/60 flex items-center justify-center shrink-0 transition-colors">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-purple-200 scale-0 transition-transform duration-200" id="radio-inner-no"></div>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-purple-100" data-i18n="optNoTitle">很遺憾，這次無法參加</div>
+                                    <div class="text-xs text-purple-300/60" data-i18n="optNoSub">下次中和再相聚</div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 3. 預計抵達時間 (動態展開區塊：僅在選擇「我會去！」時顯示) -->
+                <div id="arrival-time-wrapper" class="expand-wrapper">
+                    <div class="expand-inner">
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-disco-pink/15 to-purple-950/60 border-2 border-disco-gold/50">
+                            <label for="arrival-time" class="flex items-center justify-between text-sm font-bold text-disco-gold mb-2.5">
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <span data-i18n="fieldArrival">預計抵達時間</span>
+                                </span>
+                                <span class="text-xs text-pink-200 font-normal" data-i18n="arrivalHint">19:30 準時開演</span>
+                            </label>
+                            
+                            <!-- 快速時間選擇標籤 (貼合主視覺 19:30 準時抵達 / 晚點到) -->
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+                                <button type="button" onclick="selectTimePreset('19:30', this)" class="time-preset-btn px-2.5 py-2 rounded-xl bg-disco-pink text-white border border-disco-gold text-xs font-bold transition-all cursor-pointer shadow-sm" data-i18n="presetOnTime">
+                                    19:30 準時抵達
+                                </button>
+                                <button type="button" onclick="selectTimePreset('20:00', this)" class="time-preset-btn px-2.5 py-2 rounded-xl bg-black/50 hover:bg-disco-pink/30 text-pink-100 border border-purple-500/40 text-xs font-bold transition-all cursor-pointer">
+                                    20:00
+                                </button>
+                                <button type="button" onclick="selectTimePreset('20:30', this)" class="time-preset-btn px-2.5 py-2 rounded-xl bg-black/50 hover:bg-disco-pink/30 text-pink-100 border border-purple-500/40 text-xs font-bold transition-all cursor-pointer">
+                                    20:30
+                                </button>
+                                <button type="button" onclick="selectTimePreset('21:00', this)" class="time-preset-btn px-2.5 py-2 rounded-xl bg-black/50 hover:bg-disco-pink/30 text-pink-100 border border-purple-500/40 text-xs font-bold transition-all cursor-pointer" data-i18n="presetLate">
+                                    會晚點到
+                                </button>
+                            </div>
+
+                            <!-- 精確時間選擇器 -->
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-pink-200/80 shrink-0" data-i18n="customTimeLabel">或自訂時間：</span>
+                                <input type="time" id="arrival-time" value="19:30" oninput="clearPresetHighlight()"
+                                    class="w-full px-3.5 py-2 rounded-xl bg-black/60 border border-purple-400/40 text-white focus:outline-none focus:border-disco-gold transition-all text-sm font-bold">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. 想對主辦人說的話（備註） -->
+                <div>
+                    <label for="guest-notes" class="block text-sm font-bold text-white mb-2" data-i18n="fieldNotes">
+                        想對主辦人說的話（備註）
+                    </label>
+                    <textarea id="guest-notes" rows="3"
+                        class="w-full px-4 py-3 rounded-xl bg-black/50 border-2 border-purple-500/40 text-white placeholder-purple-300/40 focus:outline-none focus:border-disco-pink focus:ring-2 focus:ring-disco-pink/30 transition-all text-sm sm:text-base resize-none"
+                        data-placeholder-zh="例如：我想帶朋友、會帶什麼酒水零食、飲食禁忌，或預約洗澡時段..."
+                        data-placeholder-en="e.g., Bringing a friend, what drinks/snacks you're bringing, dietary notes..."
+                        placeholder="例如：我想帶朋友、會帶什麼酒水零食、飲食禁忌，或預約洗澡時段..."></textarea>
+                </div>
+
+                <!-- 5. 送出回覆按鈕 -->
+                <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#7928CA] via-disco-pink to-[#FF4D4D] hover:brightness-110 text-white font-black text-lg tracking-wide shadow-[0_8px_25px_rgba(255,30,138,0.45)] border border-white/25 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer mt-2">
+                    <i class="fa-solid fa-paper-plane text-sm"></i>
+                    <span data-i18n="btnSubmit">送出回覆</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 第三階段：感謝與確認畫面 (Stage 3)            -->
+        <!-- ========================================== -->
+        <section id="stage-confirm" class="hidden w-full bg-disco-card/95 backdrop-blur-xl rounded-3xl p-7 sm:p-9 neon-card-glow text-center relative">
+            <!-- 狀態圖示 -->
+            <div id="confirm-icon-box" class="w-16 h-16 rounded-full bg-disco-pink/20 border-2 border-disco-gold text-disco-gold flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg">
+                🍕
+            </div>
+
+            <!-- 動態感謝標題 -->
+            <h2 id="confirm-title" class="text-2xl sm:text-3xl font-black text-disco-gold mb-2">
+                報名成功！週五中和見！
+            </h2>
+            <p id="confirm-desc" class="text-sm text-pink-100/90 mb-6 leading-relaxed">
+                披薩跟音樂都準備好了，記得帶上你的酒水與好心情（還有記得穿衣服）！
+            </p>
+
+            <!-- 回覆資訊摘要卡片 -->
+            <div class="bg-black/45 rounded-2xl p-5 border border-disco-pink/40 text-left space-y-3.5 mb-6">
+                <div class="flex justify-between items-center border-b border-purple-500/25 pb-2.5">
+                    <span class="text-xs text-pink-200/70 font-medium" data-i18n="summaryName">賓客名字</span>
+                    <span id="summary-name-val" class="text-sm font-black text-white">-</span>
+                </div>
+                <div class="flex justify-between items-center border-b border-purple-500/25 pb-2.5">
+                    <span class="text-xs text-pink-200/70 font-medium" data-i18n="summaryStatus">參與狀態</span>
+                    <span id="summary-status-val" class="text-xs font-bold px-3 py-1 rounded-full bg-disco-pink text-white">-</span>
+                </div>
+                <div id="summary-time-row" class="flex justify-between items-center border-b border-purple-500/25 pb-2.5">
+                    <span class="text-xs text-pink-200/70 font-medium" data-i18n="summaryTime">預計抵達時間</span>
+                    <span id="summary-time-val" class="text-sm font-black text-disco-gold">-</span>
+                </div>
+                <div>
+                    <span class="text-xs text-pink-200/70 font-medium block mb-1.5" data-i18n="summaryNotes">給主辦人的話（備註）</span>
+                    <p id="summary-notes-val" class="text-sm text-pink-50 bg-purple-950/60 p-3 rounded-xl border border-purple-500/30 break-words">-</p>
+                </div>
+            </div>
+
+            <!-- 底部操作按鈕群 -->
+            <div class="flex flex-col sm:flex-row gap-3">
+                <!-- 加入行事曆按鈕 (僅參加時顯示) -->
+                <button id="btn-add-calendar" onclick="downloadICS()" class="flex-1 py-3.5 px-4 rounded-xl bg-gradient-to-r from-disco-gold to-disco-amber hover:brightness-105 text-purple-950 font-black text-sm transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer">
+                    <i class="fa-regular fa-calendar-plus"></i>
+                    <span data-i18n="btnCalendar">加入行事曆</span>
+                </button>
+
+                <!-- 修改回覆按鈕 -->
+                <button onclick="switchStage('form')" class="flex-1 py-3.5 px-4 rounded-xl bg-purple-900/70 hover:bg-purple-800 text-white border border-purple-400/40 font-bold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-pen-to-square text-xs"></i>
+                    <span data-i18n="btnEdit">修改回覆</span>
+                </button>
+            </div>
+
+            <!-- 行事曆下載成功提示 -->
+            <div id="calendar-toast" class="hidden mt-4 text-xs font-bold text-disco-gold bg-disco-gold/15 border border-disco-gold/40 rounded-xl py-2.5 px-3">
+                <i class="fa-solid fa-circle-check mr-1"></i>
+                <span data-i18n="calendarDownloaded">已為您下載「本週五溫馨中和之夜」行事曆 (.ics)！</span>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 頁尾與底部海報格紋飾條 -->
+    <footer class="w-full text-center z-10">
+        <p class="py-3 text-xs text-pink-200/50 font-medium tracking-wider">GOLDEN LEOPARD • COZY ZHONGHE NIGHT</p>
+        <div class="w-full h-2 poster-checkered-bar"></div>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 雙語字典配置 (繁體中文 / English)
+        // ==========================================
+        const i18nData = {
+            zh: {
+                inviteLine1: "誠摯邀請您參與",
+                inviteLine2: "本週五溫馨中和之夜",
+                timeLabel: "派對時間 / TIME",
+                timeValue: "19:30 準時開演",
+                notesHeader: "派對備註 & 溫馨提醒",
+                rule1: "自備酒水與零食，現場會有美味披薩！",
+                rule2: "可以洗澡，但一次建議一人就好",
+                rule3: "無 Dress Code，希望你有穿衣服",
+                btnOpenRsvp: "點擊回覆出席",
+                btnBackInvite: "返回邀請函海報",
+                formTitle: "出席回覆",
+                formSubtitle: "填寫以下資訊，讓我們知道你會來中和狂歡！",
+                fieldName: "您的名字",
+                fieldAttend: "您會參與嗎？",
+                optYesTitle: "我會去！🎉",
+                optYesSub: "準備好開喝吃披薩",
+                optNoTitle: "很遺憾，這次無法參加",
+                optNoSub: "下次中和再相聚",
+                fieldArrival: "預計抵達時間",
+                arrivalHint: "19:30 準時開演",
+                presetOnTime: "19:30 準時抵達",
+                presetLate: "會晚點到",
+                customTimeLabel: "或自訂時間：",
+                fieldNotes: "想對主辦人說的話（備註）",
+                btnSubmit: "送出回覆",
+                errNameRequired: "請輸入您的名字或綽號喔！",
+                errAttendRequired: "請選擇您是否會參與派對！",
+                errTimeRequired: "請選擇您的預計抵達時間！",
+                confirmTitleYes: "報名成功！週五中和見！",
+                confirmDescYes: "披薩跟音樂都準備好了，記得帶上你的酒水與好心情（還有記得穿衣服）！",
+                confirmTitleNo: "已收到您的回覆！",
+                confirmDescNo: "很可惜這次無法一起狂歡，我們會幫你多吃兩片披薩，下次再聚！",
+                summaryName: "賓客名字",
+                summaryStatus: "參與狀態",
+                statusBadgeYes: "我會去！🎉",
+                statusBadgeNo: "無法參加",
+                summaryTime: "預計抵達時間",
+                summaryNotes: "給主辦人的話（備註）",
+                noNotesText: "（無特別備註）",
+                btnCalendar: "加入行事曆",
+                btnEdit: "修改回覆",
+                calendarDownloaded: "已為您下載「本週五溫馨中和之夜」行事曆 (.ics)！"
+            },
+            en: {
+                inviteLine1: "YOU ARE CORDIALLY INVITED TO",
+                inviteLine2: "Cozy Zhonghe Night",
+                timeLabel: "PARTY TIME",
+                timeValue: "Starts at 19:30 Promptly",
+                notesHeader: "PARTY NOTES & HOUSE RULES",
+                rule1: "BYOB & snacks — pizza will be provided!",
+                rule2: "Showers available, one at a time recommended",
+                rule3: "No dress code, just wear clothes",
+                btnOpenRsvp: "Click to RSVP",
+                btnBackInvite: "Back to Party Poster",
+                formTitle: "RSVP Details",
+                formSubtitle: "Let us know if you're joining the Zhonghe party!",
+                fieldName: "Your Name",
+                fieldAttend: "Will You Attend?",
+                optYesTitle: "Count me in! 🎉",
+                optYesSub: "Ready for pizza & drinks",
+                optNoTitle: "Sorry, I can't make it",
+                optNoSub: "Catch you next time!",
+                fieldArrival: "Expected Arrival Time",
+                arrivalHint: "Starts at 19:30",
+                presetOnTime: "19:30 On Time",
+                presetLate: "Will be late",
+                customTimeLabel: "Or pick a time:",
+                fieldNotes: "Messages or Notes",
+                btnSubmit: "Submit RSVP",
+                errNameRequired: "Please enter your name or nickname!",
+                errAttendRequired: "Please select whether you will attend!",
+                errTimeRequired: "Please select your expected arrival time!",
+                confirmTitleYes: "You're In! See You Friday!",
+                confirmDescYes: "Pizza and disco lights are ready. Don't forget your drinks, snacks, and clothes!",
+                confirmTitleNo: "Response Received!",
+                confirmDescNo: "Sorry you can't make it this Friday! We'll have an extra slice of pizza in your honor.",
+                summaryName: "Guest Name",
+                summaryStatus: "Attendance",
+                statusBadgeYes: "Count me in! 🎉",
+                statusBadgeNo: "Can't make it",
+                summaryTime: "Expected Arrival",
+                summaryNotes: "Messages or Notes",
+                noNotesText: "(No additional notes)",
+                btnCalendar: "Add to Calendar",
+                btnEdit: "Edit Response",
+                calendarDownloaded: "Calendar invite (.ics) for Cozy Zhonghe Night downloaded!"
+            }
+        };
+
+        // 應用程式狀態
+        let currentLang = 'zh';
+        let rsvpState = {
+            name: '',
+            attending: null, // 'yes' | 'no'
+            arrivalTime: '19:30',
+            isLatePreset: false,
+            notes: ''
+        };
+
+        // ==========================================
+        // 語言切換邏輯
+        // ==========================================
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en';
+
+            const btnZh = document.getElementById('btn-lang-zh');
+            const btnEn = document.getElementById('btn-lang-en');
+
+            if (lang === 'zh') {
+                btnZh.className = "px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 bg-gradient-to-r from-disco-pink to-disco-magenta text-white shadow-sm cursor-pointer";
+                btnEn.className = "px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 text-pink-200/70 hover:text-white cursor-pointer";
+            } else {
+                btnEn.className = "px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 bg-gradient-to-r from-disco-pink to-disco-magenta text-white shadow-sm cursor-pointer";
+                btnZh.className = "px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 text-pink-200/70 hover:text-white cursor-pointer";
+            }
+
+            // 更新所有帶有 data-i18n 屬性的文字
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18nData[lang][key]) {
+                    el.textContent = i18nData[lang][key];
+                }
+            });
+
+            // 更新輸入框 Placeholder
+            const nameInput = document.getElementById('guest-name');
+            const notesInput = document.getElementById('guest-notes');
+            nameInput.placeholder = nameInput.getAttribute(`data-placeholder-${lang}`);
+            notesInput.placeholder = notesInput.getAttribute(`data-placeholder-${lang}`);
+
+            // 若目前處於確認畫面，同步更新動態生成的摘要內容
+            if (!document.getElementById('stage-confirm').classList.contains('hidden')) {
+                renderConfirmation();
+            }
+        }
+
+        // ==========================================
+        // 畫面階段切換 (邀請函 <-> 表單 <-> 確認頁)
+        // ==========================================
+        function switchStage(target) {
+            const stages = {
+                invite: document.getElementById('stage-invite'),
+                form: document.getElementById('stage-form'),
+                confirm: document.getElementById('stage-confirm')
+            };
+
+            Object.values(stages).forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('stage-enter');
+            });
+
+            document.getElementById('form-error-banner').classList.add('hidden');
+            document.getElementById('calendar-toast').classList.add('hidden');
+
+            const activeEl = stages[target];
+            if (activeEl) {
+                activeEl.classList.remove('hidden');
+                void activeEl.offsetWidth;
+                activeEl.classList.add('stage-enter');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // ==========================================
+        // 動態展開/收合「預計抵達時間」
+        // ==========================================
+        function toggleArrivalTime(isAttending) {
+            const wrapper = document.getElementById('arrival-time-wrapper');
+            const dotYes = document.getElementById('radio-inner-yes');
+            const dotNo = document.getElementById('radio-inner-no');
+
+            document.getElementById('form-error-banner').classList.add('hidden');
+
+            if (isAttending) {
+                wrapper.classList.add('open');
+                dotYes.classList.remove('scale-0');
+                dotYes.classList.add('scale-100');
+                dotNo.classList.remove('scale-100');
+                dotNo.classList.add('scale-0');
+            } else {
+                wrapper.classList.remove('open');
+                dotNo.classList.remove('scale-0');
+                dotNo.classList.add('scale-100');
+                dotYes.classList.remove('scale-100');
+                dotYes.classList.add('scale-0');
+            }
+        }
+
+        // 快速時間預設按鈕選擇
+        function selectTimePreset(timeStr, btnEl) {
+            document.getElementById('arrival-time').value = timeStr;
+            rsvpState.isLatePreset = btnEl.getAttribute('data-i18n') === 'presetLate';
+
+            document.querySelectorAll('.time-preset-btn').forEach(btn => {
+                btn.className = "time-preset-btn px-2.5 py-2 rounded-xl bg-black/50 hover:bg-disco-pink/30 text-pink-100 border border-purple-500/40 text-xs font-bold transition-all cursor-pointer";
+            });
+            btnEl.className = "time-preset-btn px-2.5 py-2 rounded-xl bg-disco-pink text-white border border-disco-gold text-xs font-bold transition-all cursor-pointer shadow-sm";
+        }
+
+        function clearPresetHighlight() {
+            rsvpState.isLatePreset = false;
+            document.querySelectorAll('.time-preset-btn').forEach(btn => {
+                btn.className = "time-preset-btn px-2.5 py-2 rounded-xl bg-black/50 hover:bg-disco-pink/30 text-pink-100 border border-purple-500/40 text-xs font-bold transition-all cursor-pointer";
+            });
+        }
+
+        // ==========================================
+        // 表單驗證與送出處理
+        // ==========================================
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const nameVal = document.getElementById('guest-name').value.trim();
+            const attendRadio = document.querySelector('input[name="attendance"]:checked');
+            const timeVal = document.getElementById('arrival-time').value;
+            const notesVal = document.getElementById('guest-notes').value.trim();
+
+            const errorBanner = document.getElementById('form-error-banner');
+            const errorText = document.getElementById('form-error-text');
+
+            if (!nameVal) {
+                errorText.textContent = i18nData[currentLang].errNameRequired;
+                errorBanner.classList.remove('hidden');
+                document.getElementById('guest-name').focus();
+                return;
+            }
+
+            if (!attendRadio) {
+                errorText.textContent = i18nData[currentLang].errAttendRequired;
+                errorBanner.classList.remove('hidden');
+                return;
+            }
+
+            if (attendRadio.value === 'yes' && !timeVal) {
+                errorText.textContent = i18nData[currentLang].errTimeRequired;
+                errorBanner.classList.remove('hidden');
+                document.getElementById('arrival-time').focus();
+                return;
+            }
+
+            // 儲存狀態
+            rsvpState.name = nameVal;
+            rsvpState.attending = attendRadio.value;
+            rsvpState.arrivalTime = attendRadio.value === 'yes' ? timeVal : '';
+            rsvpState.notes = notesVal;
+
+            // 渲染確認頁面並切換
+            renderConfirmation();
+            switchStage('confirm');
+
+            // 若確定參與，施放霓虹桃紅與電光金紙花特效
+            if (rsvpState.attending === 'yes' && typeof confetti === 'function') {
+                confetti({
+                    particleCount: 90,
+                    spread: 75,
+                    origin: { y: 0.6 },
+                    colors: ['#FF1E8A', '#FFD000', '#00F0FF', '#FFFFFF']
+                });
+            }
+        }
+
+        // ==========================================
+        // 渲染確認畫面摘要
+        // ==========================================
+        function renderConfirmation() {
+            const t = i18nData[currentLang];
+            const isYes = rsvpState.attending === 'yes';
+
+            document.getElementById('confirm-title').textContent = isYes ? t.confirmTitleYes : t.confirmTitleNo;
+            document.getElementById('confirm-desc').textContent = isYes ? t.confirmDescYes : t.confirmDescNo;
+
+            const iconBox = document.getElementById('confirm-icon-box');
+            if (isYes) {
+                iconBox.className = "w-16 h-16 rounded-full bg-disco-pink/25 border-2 border-disco-gold flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg";
+                iconBox.textContent = "🍕";
+            } else {
+                iconBox.className = "w-16 h-16 rounded-full bg-purple-900/60 border-2 border-purple-400/50 flex items-center justify-center text-3xl mx-auto mb-4";
+                iconBox.textContent = "🍪";
+            }
+
+            document.getElementById('summary-name-val').textContent = rsvpState.name;
+
+            const statusBadge = document.getElementById('summary-status-val');
+            if (isYes) {
+                statusBadge.textContent = t.statusBadgeYes;
+                statusBadge.className = "text-xs font-black px-3 py-1 rounded-full bg-gradient-to-r from-disco-pink to-disco-magenta text-white shadow";
+            } else {
+                statusBadge.textContent = t.statusBadgeNo;
+                statusBadge.className = "text-xs font-bold px-3 py-1 rounded-full bg-purple-900 text-purple-200 border border-purple-500/40";
+            }
+
+            const timeRow = document.getElementById('summary-time-row');
+            const calBtn = document.getElementById('btn-add-calendar');
+            if (isYes) {
+                timeRow.classList.remove('hidden');
+                let timeDisplay = rsvpState.arrivalTime;
+                if (rsvpState.arrivalTime === '19:30' && !rsvpState.isLatePreset) {
+                    timeDisplay += currentLang === 'zh' ? ' (準時開演)' : ' (On Time)';
+                } else if (rsvpState.isLatePreset) {
+                    timeDisplay += currentLang === 'zh' ? ' (會晚點到)' : ' (Will be late)';
+                }
+                document.getElementById('summary-time-val').textContent = timeDisplay;
+                calBtn.classList.remove('hidden');
+            } else {
+                timeRow.classList.add('hidden');
+                calBtn.classList.add('hidden');
+            }
+
+            document.getElementById('summary-notes-val').textContent = rsvpState.notes || t.noNotesText;
+        }
+
+        // ==========================================
+        // 產生並下載 .ics 行事曆檔案 (11/20 FRI 19:30)
+        // ==========================================
+        function downloadICS() {
+            const title = currentLang === 'zh' ? 'Golden Leopard｜本週五溫馨中和之夜' : 'Golden Leopard | Cozy Zhonghe Night';
+            const location = currentLang === 'zh' ? '新北市中和區 (溫馨中和派對現場)' : 'Zhonghe District, New Taipei City';
+            const description = currentLang === 'zh' 
+                ? `賓客：${rsvpState.name} | 預計抵達：${rsvpState.arrivalTime} | 備註：自備酒水與零食，會有披薩；可以洗澡但一次建議一人就好；無 Dress Code，希望你有穿衣服！`
+                : `Guest: ${rsvpState.name} | Est. Arrival: ${rsvpState.arrivalTime} | Notes: BYOB & snacks, pizza provided. Showers available (one at a time). No dress code, just wear clothes!`;
+
+            // 活動時間：2026-11-20 19:30 ~ 23:30 (UTC+8 => 11:30Z ~ 15:30Z)
+            const icsContent = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//Golden Leopard Party//Cozy Zhonghe Night//EN',
+                'BEGIN:VEVENT',
+                'DTSTART:20261120T113000Z',
+                'DTEND:20261120T153000Z',
+                `SUMMARY:${title}`,
+                `LOCATION:${location}`,
+                `DESCRIPTION:${description}`,
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\r\n');
+
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'Cozy_Zhonghe_Night_1120.ics');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            document.getElementById('calendar-toast').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
