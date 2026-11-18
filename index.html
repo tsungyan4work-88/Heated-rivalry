@@ -475,9 +475,9 @@
                 </div>
 
                 <!-- 5. 送出回覆按鈕 -->
-                <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#7928CA] via-disco-pink to-[#FF4D4D] hover:brightness-110 text-white font-black text-lg tracking-wide shadow-[0_8px_25px_rgba(255,30,138,0.45)] border border-white/25 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer mt-2">
+                <button type="submit" id="btn-submit" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#7928CA] via-disco-pink to-[#FF4D4D] hover:brightness-110 text-white font-black text-lg tracking-wide shadow-[0_8px_25px_rgba(255,30,138,0.45)] border border-white/25 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer mt-2">
                     <i class="fa-solid fa-paper-plane text-sm"></i>
-                    <span data-i18n="btnSubmit">送出回覆</span>
+                    <span id="btn-submit-text" data-i18n="btnSubmit">送出回覆</span>
                 </button>
             </form>
         </section>
@@ -580,6 +580,8 @@
                 customTimeLabel: "或自訂時間：",
                 fieldNotes: "想對主辦人說的話（備註）",
                 btnSubmit: "送出回覆",
+                btnSending: "送出中…",
+                errSendFailed: "送出失敗，請檢查網路後再試一次！",
                 errNameRequired: "請輸入您的名字或綽號喔！",
                 errAttendRequired: "請選擇您是否會參與派對！",
                 errTimeRequired: "請選擇您的預計抵達時間！",
@@ -624,6 +626,8 @@
                 customTimeLabel: "Or pick a time:",
                 fieldNotes: "Messages or Notes",
                 btnSubmit: "Submit RSVP",
+                btnSending: "Sending…",
+                errSendFailed: "Couldn't send your RSVP. Check your connection and try again!",
                 errNameRequired: "Please enter your name or nickname!",
                 errAttendRequired: "Please select whether you will attend!",
                 errTimeRequired: "Please select your expected arrival time!",
@@ -643,6 +647,43 @@
                 calendarDownloaded: "Calendar invite (.ics) for Cozy Zhonghe Night downloaded!"
             }
         };
+
+        // ==========================================
+        // Google Sheet 串接：貼上 Apps Script「網頁應用程式」網址
+        // ==========================================
+        const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbz8zTmai2iiOmiwEBZfA4ew-bCVg_CfO28Zf6YjNxsVQ1twiPovrbY3CNN5iK9cfNOQ/exec';
+
+        // 每位賓客一組回覆 ID，按「修改回覆」再送出時會更新同一列
+        function getRsvpId() {
+            let id = null;
+            try { id = localStorage.getItem('heatedRivalryRsvpId'); } catch (e) {}
+            if (!id) {
+                id = 'r-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+                try { localStorage.setItem('heatedRivalryRsvpId', id); } catch (e) {}
+            }
+            return id;
+        }
+        const rsvpId = getRsvpId();
+
+        async function sendToSheet() {
+            if (!SHEET_ENDPOINT || SHEET_ENDPOINT.indexOf('http') !== 0) return;
+            const payload = {
+                id: rsvpId,
+                name: rsvpState.name,
+                attending: rsvpState.attending,
+                arrivalTime: rsvpState.arrivalTime,
+                isLatePreset: rsvpState.isLatePreset,
+                notes: rsvpState.notes,
+                lang: currentLang
+            };
+            // text/plain + no-cors：避開 CORS 預檢，Apps Script 照樣收得到
+            await fetch(SHEET_ENDPOINT, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            });
+        }
 
         // 應用程式狀態
         let currentLang = 'zh';
@@ -765,8 +806,11 @@
         // ==========================================
         // 表單驗證與送出處理
         // ==========================================
-        function handleFormSubmit(event) {
+        let isSending = false;
+
+        async function handleFormSubmit(event) {
             event.preventDefault();
+            if (isSending) return;
 
             const nameVal = document.getElementById('guest-name').value.trim();
             const attendRadio = document.querySelector('input[name="attendance"]:checked');
@@ -801,6 +845,26 @@
             rsvpState.attending = attendRadio.value;
             rsvpState.arrivalTime = attendRadio.value === 'yes' ? timeVal : '';
             rsvpState.notes = notesVal;
+
+            // 寫入 Google Sheet
+            const submitBtn = document.getElementById('btn-submit');
+            const submitText = document.getElementById('btn-submit-text');
+            isSending = true;
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-60', 'pointer-events-none');
+            submitText.textContent = i18nData[currentLang].btnSending;
+            try {
+                await sendToSheet();
+            } catch (err) {
+                errorText.textContent = i18nData[currentLang].errSendFailed;
+                errorBanner.classList.remove('hidden');
+                return;
+            } finally {
+                isSending = false;
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-60', 'pointer-events-none');
+                submitText.textContent = i18nData[currentLang].btnSubmit;
+            }
 
             // 渲染確認頁面並切換
             renderConfirmation();
